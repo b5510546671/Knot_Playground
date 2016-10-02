@@ -15,11 +15,11 @@ public class StringRemover {
 	public StringRemover(){
 		
 	}
-	
+	//ref to regex at http://regexr.com/
 	public static void main(String [] args){
 		try{			
 			//Text reader
-			FileInputStream fstream = new FileInputStream("C:\\Users\\knotsupavit\\Desktop\\twitter_textOnlyFromCNN2016102Copy.txt");
+			FileInputStream fstream = new FileInputStream("C:\\Users\\knotsupavit\\Desktop\\twitter_textOnlyFromCNN2016102.txt");
 			DataInputStream reader = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(reader));
 			String text;
@@ -43,6 +43,13 @@ public class StringRemover {
 					System.out.println("removeAtCharacterFromTweetText");
 					text = removeAtCharacterFromTweetText(text);
 				}
+				if(text.contains("#")){
+					text = removeHashTagFromTweetText(text);
+				}
+				if(text.contains("…")){
+					text = removeThreeDotsFromTweetText(text);
+				}
+				text = removeSpecialCharactersFromTweetText(text);
 				writer.write(text + System.lineSeparator());
 				//System.out.println(text);
 			}
@@ -55,42 +62,33 @@ public class StringRemover {
 		}
 	}
 	
+	private static String removeSpecialCharactersFromTweetText(String text) {
+		//remove all punctuation and symbols ref: http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string
+		text = text.replaceAll("[\\p{P}\\p{S}]", ""); 
+        return text;
+	}
+
+	private static String removeThreeDotsFromTweetText(String text) {
+		String pattern = "…";
+        Pattern p = Pattern.compile(pattern,Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(text);
+        int i = 0;
+        while (m.find()) {
+            text = text.replaceAll(m.group(0),"").trim();
+            i++;
+        }
+        return text;
+	}
+
+	private static String removeHashTagFromTweetText(String text) {
+		String pattern = "#.[^\\s]+";
+		text = text.replaceAll(pattern, "");
+        return text;
+	}
+
 	private static String removeAtCharacterFromTweetText(String text) {
-		while(true){
-			if(!text.contains("@")){
-				break;
-			}
-			
-			char [] textarr = text.toCharArray();
-			int i = 0;
-			int startTrimIndex = -1;
-			int endTrimIndex = -1;
-			for(char c : textarr){
-				if(c == '@' && startTrimIndex == -1){
-					startTrimIndex = i;					
-				}
-				if(c == ' ' && endTrimIndex == -1 && startTrimIndex != -1){					
-					endTrimIndex = i;
-					break;
-				}
-				if(i == textarr.length - 1 && startTrimIndex != -1){
-					endTrimIndex = i;
-				}
-				i++;
-			}
-			
-			//System.out.println("startTrimIndex: " + startTrimIndex + " endTrimIndex: " + endTrimIndex);
-			
-			if(startTrimIndex != -1 && endTrimIndex != -1){
-				//System.out.println("this if is called");
-				String textToBeRemoved = text.substring(startTrimIndex, endTrimIndex + 1); // endTrimIndex + 1 in order to remove the space after the character
-				//System.out.println("textToBeRemoved: " + textToBeRemoved);
-				text = text.replaceAll(textToBeRemoved, "");
-				//System.out.println("text" + text);
-			}
-			
-			
-		}
+		String pattern = "@.[\\w].[^\\s]+";
+		text = text.replaceAll(pattern, "");
 		return text;
 	}
 
@@ -100,20 +98,15 @@ public class StringRemover {
 	 * @return tweet without retweet tag
 	 */
 	public static String removeRetweetTagFromTweetText(String text){
-		char [] textarr = text.toCharArray();
-		
-		int startTrimIndex = -1;
-		int i = 0;
-		
-		for(char c : textarr){
-			if(c == ':'){
-				startTrimIndex = i + 1;
-				break;
-			}
-			i++;
-		}
-		
-		return text.substring(startTrimIndex + 1); //startTrimIndex + 1 in order to remove space after the character
+		String pattern = "RT.@.[\\w].[^\\s]+";
+        Pattern p = Pattern.compile(pattern,Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(text);
+        int i = 0;
+        while (m.find()) {
+            text = text.replaceAll(m.group(0),"").trim();
+            i++;
+        }
+        return text;
 	}
 	
 	/**
@@ -122,71 +115,8 @@ public class StringRemover {
 	 * @return tweet without link
 	 */
 	public static String removeLinkFromTweetText(String text){
-		String urlPattern = "http.[^\\s]+";
-        //String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
-        Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(text);
-        int i = 0;
-        while (m.find()) {
-        	System.out.println("found: " + i + " : " + m.start() + " - " + m.end());
-            //text = text.replaceAll(m.group(i),"").trim();
-            text = text.replaceAll(m.group(0),"").trim();
-            i++;
-        }
+		String pattern = "http.[^\\s]+";
+		text = text.replaceAll(pattern, "");
         return text;
 	}
-	
-	public static List<String> RemoveSpecialCharacters(String docString){
-    	List<String> docList = Arrays.asList(docString.split(" "));
-    	List<String> docList2 = new ArrayList<String>();
-    	for(String str : docList){
-        	while(true){
-        		if(str.endsWith(".")){
-            		str = str.replace(".", "");
-            	}
-        		else if(str.endsWith(",")){
-            		str = str.replace(",", "");
-            	}
-        		else if(str.startsWith("'")){
-            		str = str.replace("'", "");
-            	}
-        		else if(str.endsWith("'")){
-            		str = str.replace("'", "");
-            	}
-        		else if(str.startsWith("\"")){
-            		str = str.replace("\"", "");
-            	}
-        		else if(str.endsWith("\"")){
-            		str = str.replace("\"", "");
-            	}
-        		else if(str.endsWith(":")){
-            		str = str.replace(":", "");
-            	}
-        		else if(str.endsWith(";")){
-            		str = str.replace(";", "");
-            	}
-        		else if(str.endsWith("'s")){
-            		str = str.replace("'s", "");
-            	}
-        		else if(str.endsWith("?")){
-            		str = str.replace("?", "");
-            	}
-        		else if(str.endsWith("!")){
-            		str = str.replace("!", "");
-            	}
-            	else{
-            		docList2.add(str);
-            		break;
-            	}
-            	
-        	}
-        	
-        }
-    	
-    	if(docList2.get(docList2.size()-1).contains("http")){
-    		docList2.remove(docList2.size()-1);
-        }
-    	
-    	return docList2;
-    }
 }
