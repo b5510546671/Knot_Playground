@@ -62,12 +62,22 @@ public class StringRemover {
 		}
 	}
 	
+	/**
+	 * remove any non word characters from tweet text
+	 * @param text
+	 * @return
+	 */
 	private static String removeSpecialCharactersFromTweetText(String text) {
 		//remove all punctuation and symbols ref: http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string
 		text = text.replaceAll("[\\p{P}\\p{S}]", ""); 
         return text;
 	}
 
+	/**
+	 * remove three dots from tweet text
+	 * @param text
+	 * @return
+	 */
 	private static String removeThreeDotsFromTweetText(String text) {
 		String pattern = "…";
         Pattern p = Pattern.compile(pattern,Pattern.CASE_INSENSITIVE);
@@ -80,12 +90,22 @@ public class StringRemover {
         return text;
 	}
 
+	/**
+	 * remove hashtag from tweet text
+	 * @param text
+	 * @return
+	 */
 	private static String removeHashTagFromTweetText(String text) {
 		String pattern = "#.[^\\s]+";
 		text = text.replaceAll(pattern, "");
         return text;
 	}
 
+	/**
+	 * remove mentioning (@) character from tweet text
+	 * @param text
+	 * @return
+	 */
 	private static String removeAtCharacterFromTweetText(String text) {
 		String pattern = "@.[\\w].[^\\s]+";
 		text = text.replaceAll(pattern, "");
