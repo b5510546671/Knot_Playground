@@ -4,13 +4,13 @@ import java.util.regex.Pattern;
 public class TestStringRemover {
 
 	public static void main(String[] args) {
-		String result = removeUrl("RT @coreyspowell: Eclipse of the sun by a comet, and some of my other favorite #Rosetta moments.  @DiscoverMag http://");
+		String result = removeUrl("RT @coreyspowell: Eclipse of the sun by a comet, and some of my other favorite #Rosetta moments.  @DiscoverMag https:");
 		System.out.println(result);
 	}
 	
 	private static String removeUrl(String commentstr)
     {
-		String urlPattern = "http.*";
+		String urlPattern = "http.[^\\s]+";
         //String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
         Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(commentstr);

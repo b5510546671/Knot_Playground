@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringRemover {
 	public StringRemover(){
@@ -81,7 +83,7 @@ public class StringRemover {
 			
 			if(startTrimIndex != -1 && endTrimIndex != -1){
 				//System.out.println("this if is called");
-				String textToBeRemoved = text.substring(startTrimIndex, endTrimIndex);
+				String textToBeRemoved = text.substring(startTrimIndex, endTrimIndex+1);
 				//System.out.println("textToBeRemoved: " + textToBeRemoved);
 				text = text.replaceAll(textToBeRemoved, "");
 				//System.out.println("text" + text);
@@ -111,7 +113,7 @@ public class StringRemover {
 			i++;
 		}
 		
-		return text.substring(startTrimIndex);
+		return text.substring(startTrimIndex+1);
 	}
 	
 	/**
@@ -120,88 +122,18 @@ public class StringRemover {
 	 * @return tweet without link
 	 */
 	public static String removeLinkFromTweetText(String text){
-		while(true){
-			System.out.println(text);
-			if(text.contains("http://") || text.contains("https://") || text.contains("http:/") || text.contains("https:/") || text.contains("http:...") || text.contains("https:...") || text.contains("http...") || text.contains("https...")){
-				char [] textarr = text.toCharArray();
-				
-				int startTrimIndex = -1;
-				int endTrimIndex = -1;
-				
-				int i = 0;
-				int counter = 0;
-				
-				for(char c : textarr){
-					
-					if(i <= textarr.length - 5){
-						if(textarr[i] == 'h' && textarr[i+1] == 't' && textarr[i+2] == 't' && textarr[i+3] == 'p' && textarr[i+4] == ':'){
-							startTrimIndex = i;
-						}
-						else if(textarr[i] == 'h' && textarr[i+1] == 't' && textarr[i+2] == 't' && textarr[i+3] == 'p' && textarr[i+4] == 's' && textarr[i+5] == ':'){
-							startTrimIndex = i;
-						}
-					}
-					else{
-						if(c == 'h' && counter == 0){
-							counter++;
-						}
-						else if((counter == 1 && c == 't') || (counter == 2 && c == 't')){
-							counter++;
-						}
-						else if(counter == 3 && c == 'p'){
-							counter++;
-						}
-						if(counter == 4){
-							startTrimIndex = i - 4;
-							counter = 0;
-						}
-					}
-
-					if(c == ' ' && startTrimIndex > endTrimIndex){
-						endTrimIndex = i;
-						break;
-					}			
-					
-					i++;
-				}
-				if(i == textarr.length && startTrimIndex > endTrimIndex){
-					endTrimIndex = i;
-				}
-				//System.out.println("startTrimIndex: " + startTrimIndex + " endTrimIndex: " + endTrimIndex + " textarr.length is " + textarr.length);
-				String textTobeRemoved = text.substring(startTrimIndex, endTrimIndex);
-				//System.out.println("textTobeRemoved: " + textTobeRemoved);
-				text = text.replaceAll(textTobeRemoved, "");
-				//System.out.println("text: " + text);
-			}
-			else if(text.contains("http:") || text.contains("https:") || text.contains("http") || text.contains("https")){
-				//TODO: implement logic to remove https or http available link that stays on the end of tweet
-				
-				
-				//TODO: CONTINUE WORKING ON THIS!!!
-				char[] textarr = text.toCharArray();
-				
-				int i = 0;
-				int startTrimIndex = -1;
-				int endTrimIndex = -1;
-				
-				for(char c : textarr){
-					if(i <= textarr.length - 5){
-						if(textarr[i] == 'h' && textarr[i+1] == 't' && textarr[i+2] == 't' && textarr[i+3] == 'p'){
-							startTrimIndex = i;
-						}
-						else if(textarr[i] == 'h' && textarr[i+1] == 't' && textarr[i+2] == 't' && textarr[i+3] == 'p' && textarr[i+4] == 's'){
-							startTrimIndex = i;
-						}
-						
-					}
-				}
-			}
-			else{
-				break;
-			}
-		}
-		
-		return text;
+		String urlPattern = "http.[^\\s]+";
+        //String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+        Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(text);
+        int i = 0;
+        while (m.find()) {
+        	System.out.println("found: " + i + " : " + m.start() + " - " + m.end());
+            //text = text.replaceAll(m.group(i),"").trim();
+            text = text.replaceAll(m.group(0),"").trim();
+            i++;
+        }
+        return text;
 	}
 	
 	public static List<String> RemoveSpecialCharacters(String docString){
