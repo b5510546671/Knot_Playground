@@ -83,7 +83,7 @@ public class StringRemover {
 			
 			if(startTrimIndex != -1 && endTrimIndex != -1){
 				//System.out.println("this if is called");
-				String textToBeRemoved = text.substring(startTrimIndex, endTrimIndex+1);
+				String textToBeRemoved = text.substring(startTrimIndex, endTrimIndex + 1); // endTrimIndex + 1 in order to remove the space after the character
 				//System.out.println("textToBeRemoved: " + textToBeRemoved);
 				text = text.replaceAll(textToBeRemoved, "");
 				//System.out.println("text" + text);
@@ -113,7 +113,7 @@ public class StringRemover {
 			i++;
 		}
 		
-		return text.substring(startTrimIndex+1);
+		return text.substring(startTrimIndex + 1); //startTrimIndex + 1 in order to remove space after the character
 	}
 	
 	/**
