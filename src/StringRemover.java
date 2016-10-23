@@ -16,20 +16,22 @@ public class StringRemover {
 		
 	}
 	//ref to regex at http://regexr.com/
-	public static void main(String [] args){
+	public ArrayList<String> removeString(ArrayList<String> textInput){
+		ArrayList<String> cleanedText = new ArrayList<String>();
 		try{			
 			//Text reader
-			FileInputStream fstream = new FileInputStream("C:\\Users\\knotsupavit\\Desktop\\twitter_textOnlyFromCNN2016102.txt");
-			DataInputStream reader = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(reader));
-			String text;
+//			FileInputStream fstream = new FileInputStream("C:\\Users\\knotsupavit\\Desktop\\twitter_textOnlyFromCNN2016102.txt");
+//			DataInputStream reader = new DataInputStream(fstream);
+//			BufferedReader br = new BufferedReader(new InputStreamReader(reader));
+//			String text;
+//			
+//			//Text writer
+//			FileOutputStream os = new FileOutputStream("C:\\Users\\knotsupavit\\Desktop\\twitter_textOnlyFromCNN2016102_modified.txt");
+//			OutputStreamWriter osw = new OutputStreamWriter(os);
+//			Writer writer = new BufferedWriter(osw);
 			
-			//Text writer
-			FileOutputStream os = new FileOutputStream("C:\\Users\\knotsupavit\\Desktop\\twitter_textOnlyFromCNN2016102_modified.txt");
-			OutputStreamWriter osw = new OutputStreamWriter(os);
-			Writer writer = new BufferedWriter(osw);
 			
-			while((text = br.readLine()) != null){
+			for(String text : textInput){
 				System.out.println("New Text: " + text);
 				if(text.contains("http://") || text.contains("https://") || text.contains("http:/") || text.contains("https:/") || text.contains("http:...") || text.contains("https:...") || text.contains("http...") || text.contains("https...")){
 					System.out.println("removeLinkFromTweetText");
@@ -50,16 +52,17 @@ public class StringRemover {
 					text = removeThreeDotsFromTweetText(text);
 				}
 				text = removeSpecialCharactersFromTweetText(text);
-				writer.write(text + System.lineSeparator());
+				cleanedText.add(text);
 				//System.out.println(text);
 			}
 			System.out.println("SUCCESS!");
-			reader.close();			
-			writer.close();
+//			reader.close();			
+//			writer.close();
 			
 		} catch(Exception e){
 			e.printStackTrace();
 		}
+		return cleanedText;
 	}
 	
 	/**
@@ -67,9 +70,9 @@ public class StringRemover {
 	 * @param text
 	 * @return
 	 */
-	private static String removeSpecialCharactersFromTweetText(String text) {
-		//remove all punctuation and symbols ref: http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string
-		text = text.replaceAll("[\\p{P}\\p{S}]", ""); 
+	private String removeSpecialCharactersFromTweetText(String text) {
+		//remove all punctuation and symbols ref: http://stackoverflow.com/questions/10530942/regex-for-special-characters-in-java
+		text = text.replaceAll("[^\\dA-Za-z ]", "");
         return text;
 	}
 
@@ -78,7 +81,7 @@ public class StringRemover {
 	 * @param text
 	 * @return
 	 */
-	private static String removeThreeDotsFromTweetText(String text) {
+	private String removeThreeDotsFromTweetText(String text) {
 		String pattern = "…";
         Pattern p = Pattern.compile(pattern,Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(text);
@@ -95,7 +98,7 @@ public class StringRemover {
 	 * @param text
 	 * @return
 	 */
-	private static String removeHashTagFromTweetText(String text) {
+	private String removeHashTagFromTweetText(String text) {
 		String pattern = "#.[^\\s]+";
 		text = text.replaceAll(pattern, "");
         return text;
@@ -106,7 +109,7 @@ public class StringRemover {
 	 * @param text
 	 * @return
 	 */
-	private static String removeAtCharacterFromTweetText(String text) {
+	private String removeAtCharacterFromTweetText(String text) {
 		String pattern = "@.[\\w].[^\\s]+";
 		text = text.replaceAll(pattern, "");
 		return text;
@@ -117,7 +120,7 @@ public class StringRemover {
 	 * @param text a tweet in text form
 	 * @return tweet without retweet tag
 	 */
-	public static String removeRetweetTagFromTweetText(String text){
+	public String removeRetweetTagFromTweetText(String text){
 		String pattern = "RT.@.[\\w].[^\\s]+";
         Pattern p = Pattern.compile(pattern,Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(text);
@@ -134,7 +137,7 @@ public class StringRemover {
 	 * @param text a tweet in text form
 	 * @return tweet without link
 	 */
-	public static String removeLinkFromTweetText(String text){
+	public String removeLinkFromTweetText(String text){
 		String pattern = "http.[^\\s]+";
 		text = text.replaceAll(pattern, "");
         return text;
